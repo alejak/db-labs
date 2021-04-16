@@ -1,0 +1,12 @@
+let $sortedMovies := 
+	for $x in doc("videos.xml")//video
+	order by $x//user_rating descending
+	return $x
+
+let $MFBPmovie :=
+	for $movie in $sortedMovies
+	where $movie//actorRef = "916503209" and $movie//actorRef = "916503208"  
+	return $movie//title
+
+for $x at $count in subsequence($MFBPmovie, 1, 1)
+return $x

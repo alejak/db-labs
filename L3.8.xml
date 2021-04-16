@@ -1,0 +1,17 @@
+  
+    let $movies := document("videos.xml")/result/videos/video,
+        $directors := distinct-values(
+          for $movie in $movies
+          return data($movie/director)
+          )
+    let $s := (
+      for $director in $directors
+      let $sum := sum(
+        for $movie in $movies
+        where $director = data($movie/director)
+        return $movie/user_rating
+        )
+      order by $sum descending
+      return ($director)
+      )
+    return ($s[1])

@@ -1,0 +1,11 @@
+ let $movies := document("videos.xml")/result/videos/video,
+        $genres := document("videos.xml")/result/video_template/genre/choice
+    for $genre in $genres
+    return ("&#xA;", <genre genre = "{$genre}"> ;
+      {(
+        for $movie in $movies
+        where data($movie/genre) = ($genre)
+        order by $movie/user_rating descending
+        return ($movie/title, "&#xA;")
+      )}
+      </genre>)

@@ -1,0 +1,18 @@
+let $movies := document("videos.xml")/result/videos/video,
+      $actors := document("videos.xml")/result/actors/actor,
+      $maxCount := max(
+      for $actor in $actors
+      return count(
+        for $movie in $movies
+        where data($movie/actorRef) = data($actor/@id)
+        return $movie
+        )
+      )
+    for $actor in $actors
+    let $count := count(
+      for $movie in $movies
+      where data($movie/actorRef) = data($actor/@id)
+      return $movie
+      )
+    where $count = $maxCount
+    return concat("actor = ", "&#34;", $actor, "&#34;", "&#xA;")

@@ -1,0 +1,8 @@
+let $videos := doc("videos.xml")
+for $movie in $videos//video
+order by $movie//user_rating descending
+where $movie//genre = "horror"
+where $movie//dvd
+where $movie//vhs
+where $movie//beta
+return $movie/title 

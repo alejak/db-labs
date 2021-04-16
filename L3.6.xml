@@ -1,0 +1,12 @@
+let $movies := document("videos.xml")/result/videos/video,
+        $actors := document("videos.xml")/result/actors/actor
+    let $answer := distinct-values(
+      for $actor in $actors,
+          $movie in $movies
+      where $actor/@id = data($movie/actorRef)
+          and data($movie/rating) = "PG-13"
+          and data($movie/year) >= 1997
+          and data($movie/year) <= 2006
+      return $actor)
+    for $a in $answer
+    return concat($a,"&#xA;")

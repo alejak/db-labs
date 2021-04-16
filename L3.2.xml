@@ -1,0 +1,18 @@
+let $videos := doc("videos.xml")
+for $director in distinct-values($videos//data(director))
+let $count :=
+	for $movie in $videos//video
+	where $director = $movie//director
+	return $director
+let $realcount :=
+	sum(for $d in $count
+	where $d = $director
+	return 1)
+for $d in $realcount
+where $d >2
+return <movie director = "{$director}"> 
+	{for $movie in $videos//video
+	where $director = data($movie/director)
+	return ($movie//title,"&#xA;")}
+</movie>
+

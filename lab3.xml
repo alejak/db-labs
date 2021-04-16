@@ -1,0 +1,159 @@
+Lab3
+—————
+Del1 KLAR
+Del2 
+Del3 KLAR
+Del4
+Del5 KLAR
+Del6 KLAR
+Del7
+Del8
+Del9
+Del10 KLAR
+
+1)
+let $movies := doc("videos.xml")
+for $video in $movies//video
+where $video/genre = "special"
+return $video/title
+
+2)
+let $videos := doc("videos.xml")
+for $director in distinct-values($videos//data(director))
+let $count :=
+	for $movie in $videos//video
+	where $director = $movie//director
+	return $director
+let $realcount :=
+	sum(for $d in $count
+	where $d = $director
+	return 1)
+for $d in $realcount
+where $d >2
+return <movie director = "{$director}"> 
+	{for $movie in $videos//video
+	where $director = data($movie/director)
+	return ($movie//title,"&#xA;")}
+</movie>
+
+
+3)
+let $sortedMovies := 
+	for $x in doc("videos.xml")//video
+	order by $x//user_rating descending
+	return $x/title
+
+for $x at $count in subsequence($sortedMovies, 1, 1)
+return $x
+
+4)
+let $movies := document("videos.xml")/result/videos/video,
+      $actors := document("videos.xml")/result/actors/actor,
+      $maxCount := max(
+      for $actor in $actors
+      return count(
+        for $movie in $movies
+        where data($movie/actorRef) = data($actor/@id)
+        return $movie
+        )
+      )
+    for $actor in $actors
+    let $count := count(
+      for $movie in $movies
+      where data($movie/actorRef) = data($actor/@id)
+      return $movie
+      )
+    where $count = $maxCount
+    return concat("actor = ", "&#34;", $actor, "&#34;", "&#xA;")
+
+5)
+let $sortedMovies := 
+	for $x in doc("videos.xml")//video
+	order by $x//user_rating descending
+	return $x
+
+let $MFBPmovie :=
+	for $movie in $sortedMovies
+	where $movie//actorRef = "916503209" and $movie//actorRef = "916503208"  
+	return $movie//title
+
+for $x at $count in subsequence($MFBPmovie, 1, 1)
+return $x
+
+6)
+let $movies := document("videos.xml")/result/videos/video,
+        $actors := document("videos.xml")/result/actors/actor
+    let $answer := distinct-values(
+      for $actor in $actors,
+          $movie in $movies
+      where $actor/@id = data($movie/actorRef)
+          and data($movie/rating) = "PG-13"
+          and data($movie/year) >= 1997
+          and data($movie/year) <= 2006
+      return $actor)
+    for $a in $answer
+    return concat($a,"&#xA;")
+
+7)
+let $movies := document("videos.xml")/result/videos/video,
+      $actors := document("videos.xml")/result/actors/actor,
+      $maxCount := max(
+      for $actor in $actors
+      return count(
+        distinct-values(
+          for $movie in $movies
+          where data($movie/actorRef) = data($actor/@id)
+          return $movie/genre
+          )
+        )
+      )
+    for $actor in $actors
+    let $count := count(
+      distinct-values(
+        for $movie in $movies
+        where data($movie/actorRef) = data($actor/@id)
+        return $movie/genre
+        )
+      )
+    where $count = $maxCount
+    return concat("actor = ", "&#34;", $actor, "&#34;", "&#xA;")
+
+8)
+
+    let $movies := document("videos.xml")/result/videos/video,
+        $directors := distinct-values(
+          for $movie in $movies
+          return data($movie/director)
+          )
+    let $s := (
+      for $director in $directors
+      let $sum := sum(
+        for $movie in $movies
+        where $director = data($movie/director)
+        return $movie/user_rating
+        )
+      order by $sum descending
+      return ($director)
+      )
+    return ($s[1])
+9)
+let $videos := doc("videos.xml")
+for $movie in $videos//video
+order by $movie//user_rating descending
+where $movie//genre = "horror"
+where $movie//dvd
+where $movie//vhs
+where $movie//beta
+return $movie/title 
+10)
+let $nl := "&#10;"
+for $g in distinct-values(doc("videos.xml")//video/genre)
+  let $movies := for $m in doc("videos.xml")//videos
+      return $m/video
+      return <genre genre="{$g}">{
+    for $m in $movies
+      where $m//genre = $g
+      order by $m/user_rating
+      return concat($nl,$m/title)
+      order by $m/user_rating}
+    </genre>

@@ -1,0 +1,8 @@
+let $sortedMovies := 
+	for $x in doc("videos.xml")//video
+	order by $x//user_rating descending
+	return $x/title
+
+for $x at $count in subsequence($sortedMovies, 1, 10)
+return $x
+
